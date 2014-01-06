@@ -1,0 +1,40 @@
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
+main: ${plugin.mainClass}
+commands:
+  kitter:
+    aliasses: [kit, kits]
+    permission: kitter.command
+permissions:
+  kitter.command:
+    description: You are allowed to use /kit
+    default: true
+  kitter.command.apply:
+    description: You are allowed to apply kits with /kit <kitname> apply
+    default: true
+    children:
+      kitter.command.command: true
+  kitter.command.apply.other:
+    description: You are allowed to apply kits to someone else with /kit <kitname> apply [<username>]
+    default: op
+    children:
+      kitter.command.apply: true
+  kitter.command.list:
+    description: You are allowed to see your kits with /kit
+    default: true
+    children:
+      kitter.command.command: true
+  kitter.command.save:
+    description: You are allowed to save kits with /kit <kitname> save
+    default: op
+    children:
+      kitter.command.command: true
+  kitter.command.remove:
+    description: You are allowed to remove kits with /kit <kitname> remove
+    default: op
+    children:
+      kitter.command.command: true
+  kitter.kit.*:
+    description: You are allowed to apply all kits
+    default: op

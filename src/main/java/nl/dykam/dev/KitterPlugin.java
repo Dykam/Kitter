@@ -6,18 +6,27 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class KitterPlugin extends JavaPlugin {
-    KitManager kits;
+class KitterPlugin extends JavaPlugin {
+    YamlKitManager yamlKits;
+    NestedKitManager kits;
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults(true);
-        kits = new KitManager(this, "kits");
+        yamlKits = new YamlKitManager(this, "yamlKits");
+        kits = new NestedKitManager();
+        kits.add(yamlKits);
         saveConfig();
+        Bukkit.getPluginManager().registerEvents(new ServiceListener(kits), this);
+        for (RegisteredServiceProvider<KitManager> provider : Bukkit.getServicesManager().getRegistrations(KitManager.class)) {
+            kits.add(provider.getProvider());
+        }
+
     }
 
     @Override
@@ -25,18 +34,18 @@ public class KitterPlugin extends JavaPlugin {
         if(args.length == 0) { // List
             if(sender.hasPermission("kitter.command.list")) {
                 List<String> names = new ArrayList<>();
-                for(Kit kit : kits.getApplicable(sender)) {
+                for(Kit kit : yamlKits.getApplicable(sender)) {
                     names.add(kit.getName());
                 }
                 if(names.isEmpty()) {
-                    sendMessage(sender, "There are no kits for you.");
+                    sendMessage(sender, "There are no yamlKits for you.");
                 } else {
-                    sendMessage(sender, "Your kits: " + StringUtils.join(names, ", "));
+                    sendMessage(sender, "Your yamlKits: " + StringUtils.join(names, ", "));
                 }
                 return true;
             }
         } else if(args.length == 2) {
-            if (!kits.isApplicable(sender, args[0])) {
+            if (!yamlKits.isApplicable(sender, args[0])) {
                 sendMessage(sender, "You don't have permissions for this kit!");
                 return true;
             }
@@ -50,7 +59,7 @@ public class KitterPlugin extends JavaPlugin {
                         sendMessage(sender, "You can only apply a kit to a player!");
                         return true;
                     }
-                    Kit kit = kits.get(args[0]);
+                    Kit kit = yamlKits.get(args[0]);
                     if(kit == null) {
                         sendMessage(sender, "Kit " + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + " does not exist!");
                         return true;
@@ -60,22 +69,22 @@ public class KitterPlugin extends JavaPlugin {
                     return true;
                 case "save":
                     if (!sender.hasPermission("kitter.command.save")) {
-                        sendMessage(sender, "You don't have permissions to save kits!");
+                        sendMessage(sender, "You don't have permissions to save yamlKits!");
                         return true;
                     }
                     if (!(sender instanceof Player)) {
                         sendMessage(sender, "You can only save a kit as a player!");
                         return true;
                     }
-                    kits.save(args[0], (Player) sender);
+                    yamlKits.save(args[0], (Player) sender);
                     sendMessage(sender, "Kit " + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + " saved");
                     return true;
                 case "remove":
                     if (!sender.hasPermission("kitter.command.remove")) {
-                        sendMessage(sender, "You don't have permissions to remove kits!");
+                        sendMessage(sender, "You don't have permissions to remove yamlKits!");
                         return true;
                     }
-                    kits.remove(args[0]);
+                    yamlKits.remove(args[0]);
                     sendMessage(sender, "Kit " + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + " removed");
                     return true;
             }
@@ -90,7 +99,7 @@ public class KitterPlugin extends JavaPlugin {
                     sendMessage(sender, args[2] + " does not exist!");
                     return true;
                 }
-                Kit kit = kits.get(args[0]);
+                Kit kit = yamlKits.get(args[0]);
                 if(kit == null) {
                     sendMessage(sender, "Kit " + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + " does not exist!");
                     return true;
@@ -111,7 +120,7 @@ public class KitterPlugin extends JavaPlugin {
     private void showUsage(CommandSender sender) {
         List<String> message = new ArrayList<>();
         if(sender.hasPermission("kitter.command.list"))
-            message.add("/kit§7 -- Shows your kits");
+            message.add("/kit§7 -- Shows your yamlKits");
         if(sender.hasPermission("kitter.command.apply"))
             message.add("/kit <kit> apply§7 -- Applies <kit>");
         if(sender.hasPermission("kitter.command.apply.other"))
@@ -121,7 +130,7 @@ public class KitterPlugin extends JavaPlugin {
         if(sender.hasPermission("kitter.command.remove"))
             message.add("/kit <kit> remove§7 -- Removes <kit> from configuration");
         if(message.size() == 0) {
-            sendMessage(sender, "You don't have permission so see your kits");
+            sendMessage(sender, "You don't have permission so see your yamlKits");
         } else {
             sendMessage(sender, message.toArray(new String[message.size()]));
         }

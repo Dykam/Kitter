@@ -15,10 +15,11 @@ import java.util.List;
 public class KitterPlugin extends JavaPlugin {
     YamlKitManager yamlKits;
     private NestedKitManager kits;
+
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults(true);
-        yamlKits = new YamlKitManager(this, "yamlKits");
+        yamlKits = new ConfigKitManager(this, "yamlKits");
         KitAPI.kits = kits = new NestedKitManager();
         kits.add(yamlKits);
         saveConfig();

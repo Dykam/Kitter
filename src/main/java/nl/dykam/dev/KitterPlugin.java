@@ -44,6 +44,16 @@ class KitterPlugin extends JavaPlugin {
                 }
                 return true;
             }
+        } else if(args.length == 1) {
+            if(args[0].equals("reload")) {
+                if (!sender.hasPermission("kitter.command.reload")) {
+                    showUsage(sender);
+                    return true;
+                }
+                kits.reload();
+                sendMessage(sender, "Reloaded the kits.");
+                return true;
+            }
         } if(args.length == 2) {
             if (!kits.isApplicable(sender, args[0])) {
                 sendMessage(sender, "You don't have permissions for this kit!");
@@ -129,6 +139,8 @@ class KitterPlugin extends JavaPlugin {
             message.add("/kit <kit> save§7 -- Saves your inventory as <kit>");
         if(sender.hasPermission("kitter.command.remove"))
             message.add("/kit <kit> remove§7 -- Removes <kit> from configuration");
+        if(sender.hasPermission("kitter.command.reload"))
+            message.add("/kit reload§7 -- Reloads the kits");
         if(message.size() == 0) {
             sendMessage(sender, "You don't have permission so see your kits");
         } else {

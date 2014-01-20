@@ -59,6 +59,14 @@ class NestedKitManager implements KitManager {
         return null;
     }
 
+    @Override
+    public void reload() {
+        for (KitManager manager : managers) {
+            manager.reload();
+        }
+
+    }
+
     public void add(KitManager manager) {
         managers.add(manager);
     }

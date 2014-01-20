@@ -10,4 +10,6 @@ public interface KitManager {
     boolean exists(String kitName);
 
     Kit get(String kitName);
+
+    void reload();
 }

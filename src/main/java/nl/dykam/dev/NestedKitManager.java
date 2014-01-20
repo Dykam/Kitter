@@ -50,9 +50,9 @@ class NestedKitManager implements KitManager {
     }
 
     @Override
-    public YamlKit get(final String kitName) {
+    public Kit get(final String kitName) {
         for (KitManager manager : managers) {
-            YamlKit kit = manager.get(kitName);
+            Kit kit = manager.get(kitName);
             if(kit != null)
                 return kit;
         }

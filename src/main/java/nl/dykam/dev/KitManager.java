@@ -9,5 +9,5 @@ public interface KitManager {
 
     boolean exists(String kitName);
 
-    YamlKit get(String kitName);
+    Kit get(String kitName);
 }

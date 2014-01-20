@@ -12,14 +12,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
-class KitterPlugin extends JavaPlugin {
+public class KitterPlugin extends JavaPlugin {
     YamlKitManager yamlKits;
-    NestedKitManager kits;
+    private NestedKitManager kits;
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults(true);
         yamlKits = new YamlKitManager(this, "yamlKits");
-        kits = new NestedKitManager();
+        KitAPI.kits = kits = new NestedKitManager();
         kits.add(yamlKits);
         saveConfig();
         Bukkit.getPluginManager().registerEvents(new ServiceListener(kits), this);
